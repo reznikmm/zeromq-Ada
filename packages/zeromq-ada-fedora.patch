@@ -1,0 +1,45 @@
+diff --git a/zmq.gpr.inst b/zmq.gpr.inst
+index 748cab2..1667469 100644
+--- a/zmq.gpr.inst
++++ b/zmq.gpr.inst
+@@ -29,22 +29,21 @@
+ -- covered by the  GNU Public License.                                      --
+ --                                                                          --
+ ------------------------------------------------------------------------------
+-with "libzmq.gpr";
++with "directories";
++
+ project ZMQ is
+-   For Languages use ("Ada", "Makefile", "Python");
++   For Languages use ("Ada");
+ 
+-   type ZMQ_Kind_Type is ("static", "relocatable");
+-   ZMQ_Kind : ZMQ_Kind_Type := external ("LIBRARY_TYPE", "static");
++   type ZMQ_Kind_Type is ("relocatable");
++   ZMQ_Kind : ZMQ_Kind_Type := external ("LIBRARY_TYPE", "relocatable");
+    Version := "4.0.1";
+ 
+    for Library_Name use "zmqAda";
+    for Library_Version use "lib" & project'Library_Name & ".so." & Version;
+-   for Library_Dir use "../zmq/" & ZMQ_Kind;
+-   for Source_Dirs use ("../../include/zmq");
++   for Library_Dir use Directories.Libdir & "/zmq/" & ZMQ_Kind;
++   for Source_Dirs use (Directories.Includedir &  "/zmq");
+    for Externally_Built use "True";
+    case ZMQ_Kind is
+-      when "static" =>
+-         for Library_Kind use "static";
+       when "relocatable" =>
+          for Library_Kind use "dynamic";
+          for Library_Auto_Init use "True";
+@@ -57,5 +56,10 @@ project ZMQ is
+                                     "ZMQ.Utilities",
+                                     "ZMQ.Utilities.Memory_Streams");
+    end case;
++
++   package Linker is
++      for Linker_Options use ("-lzmq", "-lsodium");
++   end Linker;
++
+ end ZMQ;
+ 
